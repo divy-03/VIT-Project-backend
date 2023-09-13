@@ -18,6 +18,8 @@ class ApiFeatures {
           // If keyword is not found then this is done
         };
 
+    // if you want to find name directly then you write Product.find({name: "keyword"})
+    // So here we are doing the same thing as keyword is an object in which name : {$regex: "keyword", $options: "i"} // "$" is used for mongoDB options
     this.query = this.query.find({ ...keyword });
     return this;
   }
