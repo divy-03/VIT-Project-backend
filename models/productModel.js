@@ -43,11 +43,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 1,
-    maxLength: [4, "Stock cannot exceed 4 characters"],
+    maxLength: [4, "Stock cannot exceed 4 digits"],
   },
   createdAt: {
     type: Date,
-    deafult: Date.now,
+    default: Date.now,
   },
 });
 

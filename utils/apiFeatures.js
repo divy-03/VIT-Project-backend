@@ -1,3 +1,5 @@
+const bubbleSort = require("./bubbleSort");
+
 class ApiFeatures {
   constructor(query, queryStr) {
     // query = find method queryStr is the value of query
@@ -21,6 +23,30 @@ class ApiFeatures {
     // if you want to find name directly then you write Product.find({name: "keyword"})
     // So here we are doing the same thing as keyword is an object in which name : {$regex: "keyword", $options: "i"} // "$" is used for mongoDB options
     this.query = this.query.find({ ...keyword });
+    return this;
+  }
+
+  filter() {
+    const queryCopy = { ...this.queryStr };
+
+    // Removing some fields fro category
+    const removeFields = ["keyword", "page", "limit"];
+
+    // for each keyword in removeFields array it will delete queryCopy me se wo query
+    removeFields.forEach((key) => delete queryCopy[key]);
+
+    this.query = this.query.find(queryCopy);
+
+    return this;
+  }
+
+  sort() {
+    const sortBy = this.queryStr.sortBy;
+
+    if(sortBy=="price") {
+      this.query = bubbleSort(this.query.find());
+    }
+
     return this;
   }
 }

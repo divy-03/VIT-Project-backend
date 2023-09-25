@@ -1,15 +1,37 @@
 const Product = require("../models/productModel");
 const resError = require("../tools/resError");
 const resSuccess = require("../tools/resSuccess");
+const bubbleSort = require("../utils/bubbleSort.js");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apiFeatures");
 
 // Getting all the products
 exports.getAllProducts = catchAsyncErrors(async (req, res) => {
-  const apiFeature = new ApiFeatures(Product.find(), req.query).search();
+  const apiFeature = new ApiFeatures(Product.find(), req.query)
+    .search()
+    .filter();
 
   // Find all products in the database
   const products = await apiFeature.query;
+
+  // After finding all the products
+  res.status(200).json({
+    success: true,
+    products,
+  });
+});
+
+exports.getAllSortedProducts = catchAsyncErrors(async (req, res) => {
+  const apiFeature = new ApiFeatures(Product.find(), req.query)
+    .search()
+    .filter();
+
+  const products = await apiFeature.query;
+
+  const order = req.params.order;
+
+  // Sorting products ascending to the price
+  bubbleSort(products, order);
 
   // After finding all the products
   res.status(200).json({
