@@ -13,7 +13,15 @@ exports.getAllSortedProducts = catchAsyncErrors(async (req, res) => {
 
   const products = await apiFeature.query;
 
+  // Sequence is the order in which products are sorted
   const order = req.params.order;
+
+  let productCount;
+  if (req.query.keyword === "" && req.query.category === "") {
+    productCount = await Product.countDocuments();
+  } else {
+    productCount = products.length;
+  }
 
   // Sorting products ascending to the price
   bubbleSort(products, order);
@@ -22,6 +30,7 @@ exports.getAllSortedProducts = catchAsyncErrors(async (req, res) => {
   res.status(200).json({
     success: true,
     products,
+    productCount,
   });
 });
 
