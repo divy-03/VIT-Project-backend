@@ -6,7 +6,7 @@ const sendToken = (user, statusCode, res) => {
   const data = {
     user: {
       id: user.id,
-    },
+    },  
   };
   
   const authToken = jwt.sign(data, process.env.JWT_SECRET);
