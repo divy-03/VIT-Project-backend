@@ -9,6 +9,9 @@ module.exports = (err, req, res, next) => {
     const message = `Resource not found. Invalid : ${err.path}`;
     resError(400, message, res);
   }
+  if (err.code === 11000) {
+    resError(403, "User already exists", res);
+  }
 
   return resError(err.statusCode, err.message, res);
 };
