@@ -84,7 +84,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res) => {
 
   const resetPasswordUrl = `${req.protocol}://${req.get(
     "host"
-  )}/api/v1/password/reset/${resetToken}`;
+  )}/api/password/reset/${resetToken}`;
 
   const message = `Your password reset link is => \n\n ${resetPasswordUrl} \n\nIf you have not requested to reset password then please ignore this mail`;
 
@@ -113,3 +113,152 @@ exports.forgotPassword = catchAsyncErrors(async (req, res) => {
   }
 });
 
+exports.resetPassword = catchAsyncErrors(async (req, res) => {
+  // Creating token hash
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return resError(400, "Reset Password link is invalid or expired", res);
+  }
+
+  if (req.body.password !== req.body.confirmPassword) {
+    return resError(400, "Password doesn't match", res);
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const secPass = await bcrypt.hash(req.body.password, salt);
+
+  user.password = secPass;
+
+  user.resetPasswordExpire = undefined;
+  user.resetPasswordToken = undefined;
+
+  await user.save();
+
+  sendToken(user, 200, res);
+});
+
+// Get User Details
+exports.getUserDetails = catchAsyncErrors(async (req, res) => {
+  const user = await User.findOne(req.user._id);
+
+  return res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+// Update User Password
+exports.updatePassword = catchAsyncErrors(async (req, res) => {
+  const user = await User.findOne(req.user._id).select("+password");
+
+  const passwordCompare = await bcrypt.compare(
+    req.body.oldPassword,
+    user.password
+  );
+
+  if (!passwordCompare) {
+    return resError(401, "Password not matched", res);
+  }
+
+  if (req.body.newPassword !== req.body.confirmPassword) {
+    return resError(401, "New password not matched", res);
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const secPass = await bcrypt.hash(req.body.newPassword, salt);
+
+  user.password = secPass;
+
+  await user.save();
+
+  return sendToken(user, 200, res);
+});
+
+// Update User Profile
+exports.updateProfile = catchAsyncErrors(async (req, res) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  // TODO: add cloudinary later for avatar image
+
+  await User.findByIdAndUpdate(req.user._id, newUserData, {
+    new: true,
+    runValidators: true,
+  });
+
+  resSuccess(200, "Profile updated successfully", res);
+});
+
+// Get All Users --- ADMIN
+exports.getAllUsers = catchAsyncErrors(async (req, res) => {
+  const users = await User.find({});
+
+  return res.status(200).json({
+    success: true,
+    usersCount: users.length,
+    users: users,
+  });
+});
+
+// Get Single User Information --- ADMIN
+exports.getUser = catchAsyncErrors(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return resError(404, `User not found with id: ${req.params.id}`);
+  }
+
+  return res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+// Edit User Profile and role --- ADMIN
+exports.editUserRole = catchAsyncErrors(async (req, res) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+
+  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true,
+    userFindAndModify: false,
+  });
+
+  if (!user) {
+    return resError(404, "User not found", res);
+  }
+
+  return res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+// Delete User --- ADMIN
+exports.deleteUser = catchAsyncErrors(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  // TODO: remove cloudinary later
+
+  if (user === null) {
+    return resError(404, `User not found`, res);
+  }
+  await user.deleteOne();
+
+  resSuccess(200, `User with id: ${req.params.id} deleted successfully`, res);
+});

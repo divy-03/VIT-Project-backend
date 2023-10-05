@@ -50,6 +50,8 @@ exports.getProductDetails = catchAsyncErrors(async (req, res) => {
 
 // Create Product
 exports.createProduct = catchAsyncErrors(async (req, res) => {
+  req.body.user = req.user.id;
+
   // create product using the fields in the body
   const product = await Product.create(req.body);
 

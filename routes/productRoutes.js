@@ -7,9 +7,10 @@ const {
   getProductDetails,
   getAllSortedProducts,
 } = require("../controllers/productController");
+const { fetchUser } = require("../middleware/auth");
 
 router.route("/products/sort/:order").get(getAllSortedProducts);
-router.route("/product/new").post(createProduct);
+router.route("/product/new").post(fetchUser, createProduct);
 router
   .route("/product/:id")
   .get(getProductDetails)

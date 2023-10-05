@@ -45,6 +45,13 @@ const productSchema = new mongoose.Schema({
     default: 1,
     maxLength: [4, "Stock cannot exceed 4 digits"],
   },
+
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true,
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
