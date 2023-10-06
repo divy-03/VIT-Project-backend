@@ -6,14 +6,16 @@ const sendToken = (user, statusCode, res) => {
   const data = {
     user: {
       id: user.id,
-    },  
+    },
   };
-  
+
   const authToken = jwt.sign(data, process.env.JWT_SECRET);
 
   // Options for cookie
   const options = {
-    expries: new Date(Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 1000),
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ), 
     httpOnly: true,
   };
 
