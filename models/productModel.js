@@ -35,6 +35,36 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  numOfReviews: {
+    type: Number,
+    default: 0,
+  },
+  reviews: [
+    {
+      user: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+        required: [true, "User not found"],
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      rating: {
+        type: Number,
+        max: [5, "rating cannot exceed 5"],
+        required: true,
+      },
+      comment: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   category: {
     type: String,
     required: [true, "Please enter category"],

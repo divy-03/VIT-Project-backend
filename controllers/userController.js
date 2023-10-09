@@ -8,9 +8,16 @@ const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail.js");
 const resError = require("../tools/resError");
 const resSuccess = require("../tools/resSuccess");
+const cloudinary = require("cloudinary");
 
 // Register a User
 exports.registerUser = catchAsyncErrors(async (req, res) => {
+  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+    folder: "avatars",
+    width: 150,
+    crop: "scale",
+  });
+
   const { name, email, password } = req.body;
   const salt = await bcrypt.genSalt(10);
   const secPass = await bcrypt.hash(password, salt);
@@ -20,8 +27,8 @@ exports.registerUser = catchAsyncErrors(async (req, res) => {
     email,
     password: secPass,
     avatar: {
-      public_id: "This is a sample id",
-      url: "https://picsum.photos/200/200",
+      public_id: myCloud.public_id,
+      url: myCloud.secure_url,
     },
   });
 

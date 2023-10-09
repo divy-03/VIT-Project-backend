@@ -10,11 +10,11 @@ const {
 const { fetchUser } = require("../middleware/auth");
 
 router.route("/products/sort/:order").get(getAllSortedProducts);
-router.route("/product/new").post(fetchUser, createProduct);
+router.route("/product/new").post(createProduct);
 router
   .route("/product/:id")
   .get(getProductDetails)
   .put(updateProduct)
-  .delete(deleteProduct);
+  .delete(fetchUser, deleteProduct);
 
 module.exports = router;
