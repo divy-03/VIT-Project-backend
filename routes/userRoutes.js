@@ -23,6 +23,7 @@ router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
 router.route("/password/update").put(fetchUser, updatePassword);
 router.route("/me").get(fetchUser, getUserDetails);
+// router.route("/me").post(getUserDetails);
 router.route("/me/update").put(fetchUser, updateProfile);
 router.route("/admin/users").get(fetchUser, authRole("admin", "owner"), getAllUsers);
 router.route("/admin/user/:id").get(fetchUser, authRole("admin", "owner"), getUser);

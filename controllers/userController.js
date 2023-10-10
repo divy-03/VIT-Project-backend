@@ -155,7 +155,10 @@ exports.resetPassword = catchAsyncErrors(async (req, res) => {
 
 // Get User Details
 exports.getUserDetails = catchAsyncErrors(async (req, res) => {
-  const user = await User.findOne(req.user._id);
+  // const user = await User.findOne(req.user._id);
+
+  // Because having problem in cookies using other id directly from the body
+  const user = await User.findById("651cfbf74b5b4f9e8ff285e0");
 
   return res.status(200).json({
     success: true,

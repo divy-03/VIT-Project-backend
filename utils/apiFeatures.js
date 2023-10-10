@@ -26,6 +26,18 @@ class ApiFeatures {
     return this;
   }
 
+  user() {
+    const user = this.queryStr.user
+      ? {
+          user: this.queryStr.user,
+        }
+      : {
+          // If user is not found then this is done
+        };
+    this.query = this.query.find({ ...user });
+    return this;
+  }
+
   filter() {
     const queryCopy = { ...this.queryStr };
 
@@ -43,7 +55,7 @@ class ApiFeatures {
   sort() {
     const sortBy = this.queryStr.sortBy;
 
-    if(sortBy=="price") {
+    if (sortBy == "price") {
       this.query = bubbleSort(this.query.find());
     }
 

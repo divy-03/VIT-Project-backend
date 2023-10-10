@@ -34,6 +34,17 @@ exports.getAllSortedProducts = catchAsyncErrors(async (req, res) => {
   });
 });
 
+exports.getAllListing = catchAsyncErrors(async (req, res) => {
+  const user = req.params.user;
+
+  const products = await Product.find({ user });
+
+  res.status(200).json({
+    success: true,
+    products,
+  });
+});
+
 // Get Product Details
 exports.getProductDetails = catchAsyncErrors(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -52,7 +63,8 @@ exports.getProductDetails = catchAsyncErrors(async (req, res) => {
 exports.createProduct = catchAsyncErrors(async (req, res) => {
   // Because having problem in cookies using other id directly from the body
   // req.body.user = req.user.id;
-  req.body.user = req.body.id;
+  // req.body.user = req.body.id;
+
 
   // create product using the fields in the body
   const product = await Product.create(req.body);
