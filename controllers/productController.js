@@ -4,6 +4,7 @@ const resSuccess = require("../tools/resSuccess");
 const bubbleSort = require("../utils/bubbleSort.js");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ApiFeatures = require("../utils/apiFeatures");
+const cloudinary = require("cloudinary");
 
 // Get All Products (asc/desc/time)
 exports.getAllSortedProducts = catchAsyncErrors(async (req, res) => {
@@ -37,7 +38,7 @@ exports.getAllSortedProducts = catchAsyncErrors(async (req, res) => {
 exports.getAllListing = catchAsyncErrors(async (req, res) => {
   const user = req.params.user;
 
-  const products = await Product.find({user})
+  const products = await Product.find({ user });
 
   res.status(200).json({
     success: true,
@@ -64,6 +65,12 @@ exports.createProduct = catchAsyncErrors(async (req, res) => {
   // Because having problem in cookies using other id directly from the body
   // req.body.user = req.user.id;
   // req.body.user = req.body.id;
+
+  // const myCloud = await cloudinary.v2.uploader.upload(image1, {
+  //   folder: "products",
+  //   width: 250,
+  //   crop: "scale",
+  // });
 
   // create product using the fields in the body
   const product = await Product.create(req.body);
