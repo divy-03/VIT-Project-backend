@@ -79,6 +79,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter category"],
   },
+  wishListed: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   stock: {
     type: Number,
     required: true,
